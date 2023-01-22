@@ -9,6 +9,8 @@ const previousSearchesSection = $('#previous-searches');
 const currentWeatherSection = $('#current-weather');
 const futureWeatherSection = $('#future-weather');
 
+let weatherData;
+
 function searchWeather(event) {
   event.preventDefault();
 
@@ -24,20 +26,18 @@ function searchWeather(event) {
     .then((data) => {
       lat = data[0].lat;
       long = data[0].lon;
-      console.log(lat + ' ' + long);
+      const weatherUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${long}&appid=${apiKey}`;
+
+      return fetch(weatherUrl)
+        .then((response) => {
+          return response.json();
+        })
+        .then((data) => {
+          weatherData = data;
+          console.log(data);
+        });
     })
     .catch((msg) => {
       console.log(msg);
-    });
-
-  console.log('passing lat: ' + lat + ' and long: ' + long);
-  const weatherUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${long}&appid=${apiKey}`;
-
-  fetch(weatherUrl)
-    .then((response) => {
-      return response.json();
-    })
-    .then((data) => {
-      console.log(data);
     });
 }
