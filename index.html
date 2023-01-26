@@ -20,15 +20,13 @@
           <form id="weather-search" onsubmit="searchWeather(event)">
             <label for="city-input" class="search-label">Search for a City:</label>
             <input id="city-input" placeholder="San Diego" class="form-control mb-2" />
-            <button class="btn btn-primary w-100 ">Search</button>
-            <div id="previous-searches"></div>
+            <button class="btn btn-primary w-100">Search</button>
+            <div id="previous-searches" class="border-top mt-3"></div>
           </form>
         </section>
         <section class="col-7">
-          <div id="current-weather"></div>
-          <div id="future-weather">
-            5-Day Forecast:
-          </div>
+          <div id="current-weather" class="mb-3"></div>
+          <div id="future-weather" class="row flex-nowrap"></div>
         </section>
       </div>
     </main>

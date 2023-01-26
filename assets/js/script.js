@@ -14,17 +14,23 @@ const futureWeatherSection = $('#future-weather');
 let weatherData;
 let middayIndex;
 
+// fires when search button is clicked,
 async function searchWeather(event) {
   event.preventDefault();
 
   // if no data entered, do nothing
   if (!$(cityInput).val()) return;
 
-  const location = $(cityInput).val();
+  let location = $(cityInput).val();
+  $(cityInput).val('');
   const [lat, long] = await getCityCoords(location);
-  await getWeatherDetails(lat, long);
+  location = await getWeatherDetails(lat, long);
+  displayCurrentWeather(location);
+  displayFutureWeather();
+  saveSearch(location);
 }
 
+// gets lat and long for the city the user searches for
 async function getCityCoords(location) {
   const cityUrl = `http://api.openweathermap.org/geo/1.0/direct?q=${location}&limit=5&appid=${apiKey}`;
 
@@ -42,7 +48,7 @@ async function getCityCoords(location) {
 
 // fetches weather data for the city at the provided coordinates
 async function getWeatherDetails(lat, long, location) {
-  const weatherUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${long}&units=metric&appid=${apiKey}`;
+  const weatherUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${long}&units=imperial&cnt=48&appid=${apiKey}`;
 
   return fetch(weatherUrl)
     .then((response) => {
@@ -50,10 +56,7 @@ async function getWeatherDetails(lat, long, location) {
     })
     .then((data) => {
       weatherData = data;
-      console.log(weatherData);
-      const location = weatherData.city.name;
-      displayCurrentWeather(location);
-      saveSearch(location);
+      return (location = weatherData.city.name);
     })
     .catch((reason) => {
       console.log(reason);
@@ -70,11 +73,12 @@ function determineMiddayIndex() {
   return index;
 }
 
+// clears current weather section and the 5-day forecast text, creates new card based on location search result
 function displayCurrentWeather(location) {
   $(currentWeatherSection).html('');
+  $('#5-day').remove();
   if (weatherData === null) return;
   middayIndex = determineMiddayIndex();
-  console.log(middayIndex);
   const date = parseDate(weatherData.list[middayIndex]['dt_txt']);
   const weatherItem = weatherData.list[middayIndex];
 
@@ -102,23 +106,62 @@ function displayCurrentWeather(location) {
 
   $(currentWeatherSection).css('visibility', 'visible');
   $(currentWeatherSection).append(card);
+
+  $('<h3></h3>').text('5-Day Forecast:').attr('id', '5-day').insertAfter(currentWeatherSection);
 }
 
+// adds 4 of the same time weather items then gets the last one from the list as the API only returns 5 days but we're required to provide forecast data for 6.
+function displayFutureWeather() {
+  // clear previous weather data on new search
+  $(futureWeatherSection).html('');
+
+  // get 5 days worth of weather data
+  const weatherItems = [];
+  for (let i = middayIndex + 8; i < weatherData.list.length; i += 8) {
+    weatherItems.push(weatherData.list[i]);
+  }
+  weatherItems.push(weatherData.list[weatherData.list.length - 1]);
+
+  // create each weather data card
+  for (let i = 0; i < weatherItems.length; i++) {
+    const card = $('<div></div>');
+    const cardHeader = $('<h4></h4>');
+    const weatherImgSpan = $('<p></p>');
+    const weatherImg = $('<img></img>');
+    const temperatureText = $('<p></p>');
+    const windText = $('<p></p>');
+    const humidityText = $('<p></p>');
+    const date = parseDate(weatherItems[i]['dt_txt']);
+
+    $(card).addClass('bg-dark text-white col mx-2 fs-6');
+
+    $(cardHeader).text(date);
+    $(weatherImgSpan).append(
+      $(weatherImg).attr('src', `http://openweathermap.org/img/wn/${weatherItems[i].weather[0].icon}@2x.png`).css('width', '50px')
+    );
+    $(cardHeader).append(weatherImgSpan);
+    $(card).append(cardHeader);
+
+    $(temperatureText).text(`Temp: ${weatherItems[i].main.temp}\u00B0F`);
+    $(card).append(temperatureText);
+
+    $(windText).text(`Wind: ${weatherItems[i].wind.speed} MPH`);
+    $(card).append(windText);
+
+    $(humidityText).text(`Humidity: ${weatherItems[i].main.humidity} %`);
+    $(card).append(humidityText);
+
+    $(futureWeatherSection).append(card);
+  }
+  $(futureWeatherSection).css('visibility', 'visible');
+}
+
+// utility function to convert date provided by API to user-friendly date format
 function parseDate(dateString) {
   // string format from API is: "YYYY-MM-DD hh:mm:ss"
   const substrings = dateString.split('-');
   const day = substrings[2].split(' ')[0];
   return `${day}/${substrings[1]}/${substrings[0]}`;
-}
-
-function getWeatherImage(imgIcon) {
-  fetch(`http://openweathermap.org/img/wn/${imgIcon}@2x.png`)
-    .then((response) => {
-      return response.blob();
-    })
-    .then((data) => {
-      return URL.createObjectURL(data);
-    });
 }
 
 // saves each search to local storage, disregarding any duplicates
@@ -133,3 +176,18 @@ function saveSearch(location) {
     localStorage.setItem('savedSearches', JSON.stringify([...savedSearches, location]));
   }
 }
+
+// called on page load to populate any previously entered searches by the user
+function displaySavedSearches() {
+  const savedSearches = JSON.parse(localStorage.getItem('savedSearches'));
+  for (let search of savedSearches) {
+    const button = $('<button></button>').text(search).addClass('btn btn-secondary mt-3 w-100');
+    $(button).on('click', (event) => {
+      $(cityInput).val($(button).text());
+      searchWeather(event);
+    });
+    $(previousSearchesSection).append(button);
+  }
+}
+
+displaySavedSearches();
