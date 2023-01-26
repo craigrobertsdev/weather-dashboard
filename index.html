@@ -16,17 +16,19 @@
     <header>Weather Dashboard</header>
     <main class="container-fluid">
       <div class="row">
-        <section class="col-3" id="search-section">
+        <section class="col-2" id="search-section">
           <form id="weather-search" onsubmit="searchWeather(event)">
-            <label for="city-input">Search for a City:</label>
-            <input id="city-input" class="form-control" />
-            <button class="btn btn-primary">Search</button>
+            <label for="city-input" class="search-label">Search for a City:</label>
+            <input id="city-input" placeholder="San Diego" class="form-control mb-2" />
+            <button class="btn btn-primary w-100 ">Search</button>
             <div id="previous-searches"></div>
           </form>
         </section>
-        <section class="col">
+        <section class="col-7">
           <div id="current-weather"></div>
-          <div id="future-weather"></div>
+          <div id="future-weather">
+            5-Day Forecast:
+          </div>
         </section>
       </div>
     </main>

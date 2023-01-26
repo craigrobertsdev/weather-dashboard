@@ -1,0 +1,24 @@
+#current-weather {
+  border: 1px solid black;
+  padding: 5px;
+  visibility: hidden;
+}
+
+#current-weather p {
+  margin: 10px 0;
+}
+
+#future-weather {
+  visibility: hidden;
+  font-weight: 700;
+  font-size: 20px;
+}
+
+.search-label {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.card-header {
+  font-weight: 700;
+}

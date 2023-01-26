@@ -21,15 +21,13 @@ async function searchWeather(event) {
   if (!$(cityInput).val()) return;
 
   const location = $(cityInput).val();
-
-  const cityUrl = `http://api.openweathermap.org/geo/1.0/direct?q=${location}&limit=5&appid=${apiKey}`;
-  const [lat, long] = await getCityCoords(cityUrl);
-
-  const weatherUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${long}&units=metric&appid=${apiKey}`;
-  await getWeatherDetails(weatherUrl);
+  const [lat, long] = await getCityCoords(location);
+  await getWeatherDetails(lat, long);
 }
 
-async function getCityCoords(cityUrl) {
+async function getCityCoords(location) {
+  const cityUrl = `http://api.openweathermap.org/geo/1.0/direct?q=${location}&limit=5&appid=${apiKey}`;
+
   return fetch(cityUrl)
     .then((response) => {
       return response.json();
@@ -42,7 +40,10 @@ async function getCityCoords(cityUrl) {
     });
 }
 
-async function getWeatherDetails(weatherUrl) {
+// fetches weather data for the city at the provided coordinates
+async function getWeatherDetails(lat, long, location) {
+  const weatherUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${long}&units=metric&appid=${apiKey}`;
+
   return fetch(weatherUrl)
     .then((response) => {
       return response.json();
@@ -50,17 +51,19 @@ async function getWeatherDetails(weatherUrl) {
     .then((data) => {
       weatherData = data;
       console.log(weatherData);
+      const location = weatherData.city.name;
       displayCurrentWeather(location);
+      saveSearch(location);
     })
     .catch((reason) => {
       console.log(reason);
     });
 }
 
-// Finds the first instance of midday in the returned dataset
+// Finds the first instance of midday in the returned dataset (search for 2100 due to time returned being UTC and ACDT being +9:30)
 function determineMiddayIndex() {
   const day = weatherData.list.find((day, i) => {
-    return day['dt_txt'].endsWith('12:00:00');
+    return day['dt_txt'].endsWith('21:00:00');
   });
 
   const index = weatherData.list.indexOf(day);
@@ -68,16 +71,65 @@ function determineMiddayIndex() {
 }
 
 function displayCurrentWeather(location) {
+  $(currentWeatherSection).html('');
   if (weatherData === null) return;
   middayIndex = determineMiddayIndex();
+  console.log(middayIndex);
+  const date = parseDate(weatherData.list[middayIndex]['dt_txt']);
+  const weatherItem = weatherData.list[middayIndex];
 
   const card = $('<div></div>');
-  const cardHeader = $('<p></p>');
+  const cardHeader = $('<h2></h2>');
   const weatherImgSpan = $('<span></span');
   const weatherImg = $('<img></img>');
   const temperatureText = $('<p></p>');
   const windText = $('<p></p>');
   const humidityText = $('<p></p>');
 
-  $(cardHeader).text(`${location.toUpperCase()} (${data[middayIndex]})`);
+  $(cardHeader).text(`${location} (${date})`).addClass('card-header');
+  $(weatherImgSpan).append($(weatherImg).attr('src', `http://openweathermap.org/img/wn/${weatherItem.weather[0].icon}@2x.png`).css('width', '50px'));
+  $(cardHeader).append(weatherImgSpan);
+  $(card).append(cardHeader);
+
+  $(temperatureText).text(`Temp: ${weatherItem.main.temp}\u00B0F`);
+  $(card).append(temperatureText);
+
+  $(windText).text(`Wind: ${weatherItem.wind.speed} MPH`);
+  $(card).append(windText);
+
+  $(humidityText).text(`Humidity: ${weatherItem.main.humidity} %`);
+  $(card).append(humidityText);
+
+  $(currentWeatherSection).css('visibility', 'visible');
+  $(currentWeatherSection).append(card);
+}
+
+function parseDate(dateString) {
+  // string format from API is: "YYYY-MM-DD hh:mm:ss"
+  const substrings = dateString.split('-');
+  const day = substrings[2].split(' ')[0];
+  return `${day}/${substrings[1]}/${substrings[0]}`;
+}
+
+function getWeatherImage(imgIcon) {
+  fetch(`http://openweathermap.org/img/wn/${imgIcon}@2x.png`)
+    .then((response) => {
+      return response.blob();
+    })
+    .then((data) => {
+      return URL.createObjectURL(data);
+    });
+}
+
+// saves each search to local storage, disregarding any duplicates
+function saveSearch(location) {
+  if (weatherData === null) return;
+  let savedSearches = JSON.parse(localStorage.getItem('savedSearches'));
+
+  if (savedSearches === null) {
+    savedSearches = [];
+  }
+  if (!savedSearches.includes(location)) {
+    localStorage.setItem('savedSearches', JSON.stringify([...savedSearches, location]));
+  }
 }
