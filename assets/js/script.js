@@ -28,6 +28,7 @@ async function searchWeather(event) {
   displayCurrentWeather(location);
   displayFutureWeather();
   saveSearch(location);
+  displaySavedSearches();
 }
 
 // gets lat and long for the city the user searches for
@@ -180,13 +181,16 @@ function saveSearch(location) {
 // called on page load to populate any previously entered searches by the user
 function displaySavedSearches() {
   const savedSearches = JSON.parse(localStorage.getItem('savedSearches'));
-  for (let search of savedSearches) {
-    const button = $('<button></button>').text(search).addClass('btn btn-secondary mt-3 w-100');
-    $(button).on('click', (event) => {
-      $(cityInput).val($(button).text());
-      searchWeather(event);
-    });
-    $(previousSearchesSection).append(button);
+  if (savedSearches !== null) {
+    $(previousSearchesSection).html('');
+    for (let search of savedSearches) {
+      const button = $('<button></button>').text(search).addClass('btn btn-secondary mt-3 w-100');
+      $(button).on('click', (event) => {
+        $(cityInput).val($(button).text());
+        searchWeather(event);
+      });
+      $(previousSearchesSection).append(button);
+    }
   }
 }
 
