@@ -32,7 +32,7 @@ async function searchWeather(event) {
 
 // gets lat and long for the city the user searches for
 async function getCityCoords(location) {
-  const cityUrl = `http://api.openweathermap.org/geo/1.0/direct?q=${location}&limit=5&appid=${apiKey}`;
+  const cityUrl = `https://api.openweathermap.org/geo/1.0/direct?q=${location}&limit=5&appid=${apiKey}`;
 
   return fetch(cityUrl)
     .then((response) => {
@@ -91,7 +91,7 @@ function displayCurrentWeather(location) {
   const humidityText = $('<p></p>');
 
   $(cardHeader).text(`${location} (${date})`).addClass('card-header');
-  $(weatherImgSpan).append($(weatherImg).attr('src', `http://openweathermap.org/img/wn/${weatherItem.weather[0].icon}@2x.png`).css('width', '50px'));
+  $(weatherImgSpan).append($(weatherImg).attr('src', `https://openweathermap.org/img/wn/${weatherItem.weather[0].icon}@2x.png`).css('width', '50px'));
   $(cardHeader).append(weatherImgSpan);
   $(card).append(cardHeader);
 
@@ -137,7 +137,7 @@ function displayFutureWeather() {
 
     $(cardHeader).text(date);
     $(weatherImgSpan).append(
-      $(weatherImg).attr('src', `http://openweathermap.org/img/wn/${weatherItems[i].weather[0].icon}@2x.png`).css('width', '50px')
+      $(weatherImg).attr('src', `https://openweathermap.org/img/wn/${weatherItems[i].weather[0].icon}@2x.png`).css('width', '50px')
     );
     $(cardHeader).append(weatherImgSpan);
     $(card).append(cardHeader);
