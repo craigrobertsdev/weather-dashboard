@@ -13,9 +13,11 @@
     <link rel="stylesheet" href="./assets/css/style.css"
   </head>
   <body>
+    <!-- header -->
     <header class="text-white text-center"><h1>Weather Dashboard</h1></header>
     <main class="container-fluid">
       <div class="row">
+        <!-- search bar and saved searches section -->
         <section class="col-2" id="search-section">
           <form id="weather-search" onsubmit="searchWeather(event)">
             <label for="city-input" class="search-label">Search for a City:</label>
@@ -24,6 +26,7 @@
             <div id="previous-searches" class="border-top mt-3"></div>
           </form>
         </section>
+        <!-- weather display section -->
         <section class="col-7">
           <div id="current-weather" class="mb-3"></div>
           <div id="future-weather" class="row flex-nowrap"></div>

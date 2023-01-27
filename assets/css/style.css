@@ -2,28 +2,32 @@ header {
   background: linear-gradient(to right, #12125f, #000);
 }
 
+/* style for the today weather section starts off hidden until a user searches for a city*/
 #current-weather {
   border: 1px solid black;
   padding: 5px;
   visibility: hidden;
 }
 
+/* creates space below each p element in the today weather section */
 #current-weather p {
   margin: 10px 0;
 }
 
+/* same situation as current-weather section, starts hidden but displays when populating. this is the 5-day forecast section */
 #future-weather {
   visibility: hidden;
   font-weight: 700;
   font-size: 20px;
 }
 
+/* for the label attached to the search input */
 .search-label {
   font-size: 24px;
   font-weight: 700;
 }
 
+/* for the "5-Day Forecast" text */
 .card-header {
   font-weight: 700;
 }
-
