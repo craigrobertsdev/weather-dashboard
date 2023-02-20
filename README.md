@@ -1,33 +1,48 @@
-# Weather Dashboard
+# Weather Dashboard 
+
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## Table of Contents
 
-- [Motivation](#motivation)
-- [Problem Solved](#problem-solved)
-- [What I Learned](#what-i-learned)
-- [Site Access](#site-access)
+- [Description](#description)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Contributing](#contributing)
+- [Questions](#questions)
+- [License](#license)
 
-<br>
-<p align="center">
-  <img alt="Portfolio page" src="https://github.com/craigrobertsdev/weather-dashboard/blob/main/screenshot.jpg">
-</p>
+## Description
 
+Search for weather from anywhere in the world and be presented with a 5-day forecast for your chosen location.
 
-## Motivation
+Data for this application is provided by [Open Weather](https://openweathermap.org/).
 
-This project was motivated by the need to know what the weather will be like, in whatever part of the world I may be in.
+## Installation
 
-## Problem Solved
+No dependencies are required to use this page.
 
-The application takes user input based on the location they want the weather for and displays the current weather and the 5-day forecast for that location. 
+## Usage
 
-The user's previous searches are saved to local storage so the query can be re-run more easily on returning to the page.
+This project is deployed using GitHub Pages [here](https://craigrobertsdev.github.io/weather-dashboard/).
 
-## What I Learned
+When you have searched for a location, that search will be saved to local storage for future use. 
 
-From this project, I learnt how to query third-party APIs and use async/await functionality to ensure my asynchronous fetch requests were completing before another one started, all while writing code in a clean and readable manner.
+When returning to the page, click on the link to be presented with the forecast for that location for the next 5 days.
 
-The data is retrieved by querying the OpenWeatherMap geolocation API to convert the searched-for city into co-ordinates, then passing them to the 5-day forecast API from the same provider.  
+  <p align="center">
+  <img src="https://github.com/craigrobertsdev/weather-dashboard/raw/main/screenshot.jpg">
+  </p>
 
-## Site Access
-This site was built using Github Pages and can be found [here](https://craigrobertsdev.github.io/weather-dashboard/)
+## Contributing
+
+If you wish to contribute, please fork the repo and submit a pull request for review.
+
+## Questions
+
+View my other projects at [https://github.com/craigrobertsdev/](https://github.com/craigrobertsdev/).
+
+If you would lke to contact me, I can be reached at [craig.roberts11@outlook.com](mailto:craig.roberts11@outlook.com).
+
+## License
+
+This project is licensed under the MIT license. See [here](https://opensource.org/licenses/MIT) for more info.
